@@ -35,6 +35,28 @@ export default {
         }
     },
     methods: {
+        parseObjectMessage(message) {
+            if (!message.type) {
+                    return;
+                }
+
+            if (message.type.toLowerCase() === "draw") {
+                if (message.command === "text") {
+                    message.config.offsetX = width/2;
+                    message.config.scaleX = this.configKonva.scaleX;
+                }
+                if (message.config.id) {
+                    const index = this.shapes.findIndex(e => e.config.id && String(e.config.id) === String(message.config.id));
+                    console.log(index, this.shapes);
+
+                    if (index !== -1) {
+                        this.shapes.splice(index, 1, message);
+                        return;
+                    }
+                }
+                this.shapes.push(message);
+            }
+        },
         initWebSocket() {
             this.ws = new WebSocket(this.host);
 
@@ -51,26 +73,15 @@ export default {
                     console.error("Error parse",e);
                     return
                 }
-                if (!message.type) {
-                    return;
-                }
 
-                if (message.type.toLowerCase() === "draw") {
-                    if (message.command === "text") {
-                        message.config.offsetX = width/2;
-                        message.config.scaleX = this.configKonva.scaleX;
-                    }
-                    if (message.config.id) {
-                        const index = this.shapes.findIndex(e => e.config.id && String(e.config.id) === String(message.config.id));
-                        console.log(index, this.shapes);
-
-                        if (index !== -1) {
-                            this.shapes.splice(index, 1, message);
-                            return;
+                if (typeof message === "object") {
+                    if (Array.isArray(message)) {
+                        for (const config of message) {
+                            this.parseObjectMessage(config);
                         }
+                    } else {
+                        this.parseObjectMessage(message);
                     }
-                    this.shapes.push(message);
-                    
                 }
             };
 

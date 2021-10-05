@@ -55,6 +55,10 @@ export class Visualizer {
     });
   }
 
+  addCircles(configs: ICircle[]) {
+    this.send(configs.map((e) => ({ type: "draw", command: "circle", config: e })));
+  }
+
   addLine(config: ILine) {
     this.send({
       type: "draw",
@@ -63,12 +67,20 @@ export class Visualizer {
     });
   }
 
+  addLines(configs: ILine[]) {
+    this.send(configs.map((e) => ({ type: "draw", command: "line", config: e })));
+  }
+
   addText(config: IText) {
     this.send({
       type: "draw",
       command: "text",
       config,
     });
+  }
+
+  addTexts(configs: IText[]) {
+    this.send(configs.map((e) => ({ type: "draw", command: "text", config: e })));
   }
 
   addRect(config: IRect) {
