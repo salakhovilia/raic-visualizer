@@ -27,23 +27,25 @@ export default {
                 width,
                 height,
                 draggable: true,
-                x: width / 2,
-                offsetX: width / 4,
-                scaleX: -1
+                y: height / 2,
+                // offsetX: width / 4,
+                scaleY: -1
             },
             shapes: []
         }
     },
     methods: {
         parseObjectMessage(message) {
+            console.log(message);
             if (!message.type) {
                     return;
                 }
 
             if (message.type.toLowerCase() === "draw") {
                 if (message.command === "text") {
-                    message.config.offsetX = width/2;
+                    // message.config.offsetX = width / 4;
                     message.config.scaleX = this.configKonva.scaleX;
+                    message.config.scaleY = this.configKonva.scaleY;
                 }
                 if (message.config.id) {
                     const index = this.shapes.findIndex(e => e.config.id && String(e.config.id) === String(message.config.id));
@@ -63,6 +65,7 @@ export default {
             this.ws.onopen = (e) => {
                 console.log("[open] Соединение установлено");
                 this.state = "Connected";
+                this.shapes.splice(0, this.shapes.length);
             };
 
             this.ws.onmessage = (event) => {
